@@ -116,9 +116,64 @@ object cats extends IronCatsInstances:
     inline def refineFurtherValidatedNel[C2](using inline constraint: Constraint[A, C2]): ValidatedNel[String, A :| (C1 & C2)] =
       (value: A).refineValidatedNel[C2].map(_.assumeFurther[C1])
 
+<<<<<<< HEAD
 /**
  * Represent all Cats' typeclass instances for Iron.
  */
+=======
+  extension [A, C, T](ops: RefinedTypeOpsImpl[A, C, T])
+
+    /**
+     * Refine the given value at runtime, resulting in an [[EitherNec]].
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Right]] containing this value as [[IronType]] or a [[Left]] containing the constraint message.
+     * @see [[either]], [[eitherNel]].
+     */
+    inline def eitherNec(value: A)(using inline c: Constraint[A, C]): EitherNec[String, T] = value.refineNec[C].map(_.asInstanceOf[T])
+
+    /**
+     * Refine the given value at runtime, resulting in an [[EitherNel]].
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Right]] containing this value as [[IronType]] or a [[Left]] containing the constraint message.
+     * @see [[either]], [[eitherNec]].
+     */
+    inline def eitherNel(value: A)(using inline c: Constraint[A, C]): EitherNel[String, T] = value.refineNel[C].map(_.asInstanceOf[T])
+
+    /**
+     * Refine the given value at runtime, resulting in a [[Validated]].
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing the constraint message.
+     * @see [[validatedNec]], [[validatedNel]].
+     */
+    inline def validated(value: A)(using inline c: Constraint[A, C]): Validated[String, T] = value.refineValidated[C].map(_.asInstanceOf[T])
+
+    /**
+     * Refine the given value applicatively at runtime, resulting in a [[ValidatedNec]].
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyChain]] of error messages.
+     * @see [[validated]], [[validatedNel]].
+     */
+    inline def validatedNec(value: A)(using inline c: Constraint[A, C]): ValidatedNec[String, T] =
+      value.refineValidatedNec[C].map(_.asInstanceOf[T])
+
+    /**
+     * Refine the given value applicatively at runtime, resulting in a [[ValidatedNel]].
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyList]] of error messages.
+     * @see [[validated]], [[validatedNec]].
+     */
+    inline def validatedNel(value: A)(using inline c: Constraint[A, C]): ValidatedNel[String, T] =
+      value.refineValidatedNel[C].map(_.asInstanceOf[T])
+
+  /**
+   * Represent all Cats' typeclass instances for Iron.
+   */
+>>>>>>> b401ea6e4e28ee7e2f6ad768e24d3b521abb79c6
 private trait IronCatsInstances extends IronCatsLowPriority:
   inline given [A, C](using inline ev: Eq[A]): Eq[A :| C] = ev.asInstanceOf[Eq[A :| C]]
 
