@@ -116,8 +116,6 @@ object cats extends IronCatsInstances:
     inline def refineFurtherValidatedNel[C2](using inline constraint: Constraint[A, C2]): ValidatedNel[String, A :| (C1 & C2)] =
       (value: A).refineValidatedNel[C2].map(_.assumeFurther[C1])
 
-
-
 /**
  * Represent all Cats' typeclass instances for Iron.
  */
@@ -130,9 +128,11 @@ private trait IronCatsInstances extends IronCatsLowPriority:
 
   inline given [A, C](using inline ev: Show[A]): Show[A :| C] = ev.asInstanceOf[Show[A :| C]]
 
-  inline given [A, C, V](using inline ev: LowerBounded[A], implication: C ==> Greater[V]): LowerBounded[A :| C] = ev.asInstanceOf[LowerBounded[A :| C]]
+  inline given [A, C, V](using inline ev: LowerBounded[A], implication: C ==> Greater[V]): LowerBounded[A :| C] =
+    ev.asInstanceOf[LowerBounded[A :| C]]
 
-  inline given [A, C, V](using inline ev: UpperBounded[A], implication: C ==> Greater[V]): UpperBounded[A :| C] = ev.asInstanceOf[UpperBounded[A :| C]]
+  inline given [A, C, V](using inline ev: UpperBounded[A], implication: C ==> Greater[V]): UpperBounded[A :| C] =
+    ev.asInstanceOf[UpperBounded[A :| C]]
 
   private def posMonoid[A, C](using ev: CommutativeMonoid[A], shift: PosShift[A], implication: C ==> Positive): CommutativeMonoid[A :| C] =
     new CommutativeMonoid[A :| C]:

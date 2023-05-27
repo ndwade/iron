@@ -4,6 +4,7 @@ import _root_.cats.Show
 import _root_.cats.kernel.*
 import _root_.cats.derived.*
 import _root_.cats.instances.all.*
+import _root_.cats.syntax.all.*
 
 import io.github.iltotore.iron.cats.given
 import io.github.iltotore.iron.constraint.all.*
@@ -30,6 +31,8 @@ object CatsSuite extends TestSuite:
 
   given BoundedSemilattice[String] = BoundedSemilattice.instance("", _ + _)
 
+  def combinePositive(l: Int :| Positive, r: Int :| Positive)(using CommutativeMonoid[Int :| Positive]): Int :| Positive =
+    l |+| r
   val tests: Tests = Tests {
 
     test("Cats instances are resolved for String iron types") {
@@ -62,6 +65,17 @@ object CatsSuite extends TestSuite:
         test("int") {
           test("pos") - assert(CommutativeMonoid[Int :| Positive].combine(1, 5) == 6)
           test("neg") - assert(CommutativeMonoid[Int :| Negative].combine(-1, -5) == -6)
+        }
+
+        test("int-syntax") {
+          val six: Int :| Positive = 6
+          val twelve = six |+| six
+          val negativeSix: Int :| Negative = -6
+          val negativeTwelve = negativeSix |+| negativeSix
+          test("plus") - assert(six + six === twelve)
+          test("pos") - assert(combinePositive(six, six) === twelve)
+          test("neg") - assert((negativeSix |+| negativeSix) === negativeTwelve)
+          test("minus") - assert(negativeSix + negativeSix === negativeTwelve)
         }
 
         test("long") {
