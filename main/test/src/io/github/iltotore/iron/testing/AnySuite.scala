@@ -43,5 +43,19 @@ object AnySuite extends TestSuite:
     test("strictEqual") {
       test - 0.assertRefine[StrictEqual[0]]
       test - 1.assertNotRefine[StrictEqual[0]]
+      test - BigDecimal(0).assertRefine[StrictEqual[0]]
+      test - BigDecimal(1).assertNotRefine[StrictEqual[0]]
+      test - BigInt(0).assertRefine[StrictEqual[0]]
+      test - BigInt(1).assertNotRefine[StrictEqual[0]]
+      test - java.math.BigDecimal("0").assertRefine[StrictEqual[0]]
+      test - java.math.BigDecimal("1").assertNotRefine[StrictEqual[0]]
+      test - java.math.BigInteger("0").assertRefine[StrictEqual[0]]
+      test - java.math.BigInteger("1").assertNotRefine[StrictEqual[0]]
+    }
+
+    test("in") {
+      test - 0.assertRefine[In[(0, 1)]]
+      test - 1.assertRefine[In[(0, 1)]]
+      test - 2.assertNotRefine[In[(0, 1)]]
     }
   }

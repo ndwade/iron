@@ -12,6 +12,10 @@ object NumericSuite extends TestSuite:
     test("greater") {
       test - 0.assertNotRefine[Greater[0]]
       test - 1.assertRefine[Greater[0]]
+      test - BigDecimal(0).assertNotRefine[Greater[0]]
+      test - BigDecimal(1).assertRefine[Greater[0]]
+      test - BigInt(0).assertNotRefine[Greater[0]]
+      test - BigInt(1).assertRefine[Greater[0]]
     }
 
     test("greaterEqual") {
@@ -23,6 +27,10 @@ object NumericSuite extends TestSuite:
     test("less") {
       test - 0.assertNotRefine[Less[0]]
       test - -1.assertRefine[Less[0]]
+      test - BigDecimal(0).assertNotRefine[Less[0]]
+      test - BigDecimal(-1).assertRefine[Less[0]]
+      test - BigInt(0).assertNotRefine[Less[0]]
+      test - BigInt(-1).assertRefine[Less[0]]
     }
 
     test("lessEqual") {
@@ -68,12 +76,22 @@ object NumericSuite extends TestSuite:
     test("multiple") {
       test - 1.assertNotRefine[Multiple[2]]
       test - 2.assertRefine[Multiple[2]]
+      test - BigInt(1).assertNotRefine[Multiple[2]]
+      test - BigInt(2).assertRefine[Multiple[2]]
+      test - BigDecimal(1).assertNotRefine[Multiple[2]]
+      test - BigDecimal(2).assertRefine[Multiple[2]]
     }
 
     test("divide") {
       test - 1.assertRefine[Divide[2]]
       test - 2.assertRefine[Divide[2]]
       test - 3.assertNotRefine[Divide[2]]
+      test - BigInt(1).assertRefine[Divide[2]]
+      test - BigInt(2).assertRefine[Divide[2]]
+      test - BigInt(3).assertNotRefine[Divide[2]]
+      test - BigDecimal(1).assertRefine[Divide[2]]
+      test - BigDecimal(2).assertRefine[Divide[2]]
+      test - BigDecimal(3).assertNotRefine[Divide[2]]
     }
 
     test("nan") {

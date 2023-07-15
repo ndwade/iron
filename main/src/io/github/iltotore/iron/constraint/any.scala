@@ -1,11 +1,12 @@
 package io.github.iltotore.iron.constraint
 
 import io.github.iltotore.iron.{==>, Constraint, Implication}
-import io.github.iltotore.iron.compileTime.stringValue
+import io.github.iltotore.iron.compileTime.*
 
 import scala.compiletime.{constValue, summonInline}
 import scala.compiletime.ops.any.ToString
 import scala.compiletime.ops.boolean
+import scala.util.NotGiven
 
 /**
  * Constraints working for any type (e.g [[any.StrictEqual]]) and constraint operators (e.g [[any.Not]]...).
@@ -16,6 +17,12 @@ object any:
    * An always-valid constraint.
    */
   final class True
+
+  /**
+   * Alias for [[True]]. Usually used for new types with no constraint.
+   * @see "Creating new types" reference.
+   */
+  type Pure = True
 
   /**
    * An always-invalid constraint.
@@ -65,6 +72,17 @@ object any:
    * @tparam V the value the input must be equal to.
    */
   final class StrictEqual[V]
+
+  /**
+   * Tests strict equality with any one of the given values.
+   * @tparam V the values the input must be in.
+   * @example {{{
+   * type Digit = In[(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)]
+   * }}}
+   */
+  type In[V <: NonEmptyTuple] = V match
+    case *:[h, EmptyTuple] => StrictEqual[h]
+    case *:[h, t]          => StrictEqual[h] | In[t]
 
   object True:
 
@@ -165,8 +183,30 @@ object any:
     given right[C1, C2, C3](using C1 ==> Not[C2], C1 ==> C3): (C1 ==> Xor[C2, C3]) = Implication()
 
   object StrictEqual:
-    inline given [A, V]: Constraint[A, StrictEqual[V]] with
 
+    private trait StrictEqualConstraint[A, V] extends Constraint[A, StrictEqual[V]]:
+      override inline def message: String = "Should strictly equal to " + stringValue[V]
+
+    inline given [A, V]: StrictEqualConstraint[A, V] with
       override inline def test(value: A): Boolean = value == constValue[V]
 
-      override inline def message: String = "Should strictly equal to " + constValue[ToString[V]]
+    inline given bigDecimalDouble[V <: Float | Double]: StrictEqualConstraint[BigDecimal, V] with
+      override inline def test(value: BigDecimal): Boolean = value == BigDecimal(doubleValue[V])
+
+    inline given bigDecimalLong[V <: Int | Long]: StrictEqualConstraint[BigDecimal, V] with
+      override inline def test(value: BigDecimal): Boolean = value == BigDecimal(longValue[V])
+
+    inline given [V <: Int | Long]: StrictEqualConstraint[BigInt, V] with
+      override inline def test(value: BigInt): Boolean = value == BigInt(longValue[V])
+
+    inline given jBigDecimalDouble[V <: Float | Double]: StrictEqualConstraint[java.math.BigDecimal, V] with
+      override inline def test(value: java.math.BigDecimal): Boolean =
+        value == java.math.BigDecimal.valueOf(doubleValue[V])
+
+    inline given jBigDecimalLong[V <: Int | Long]: StrictEqualConstraint[java.math.BigDecimal, V] with
+      override inline def test(value: java.math.BigDecimal): Boolean =
+        value == java.math.BigDecimal.valueOf(longValue[V])
+
+    inline given jBigInteger[V <: Int | Long]: StrictEqualConstraint[java.math.BigInteger, V] with
+      override inline def test(value: java.math.BigInteger): Boolean =
+        value == java.math.BigInteger.valueOf(longValue[V])

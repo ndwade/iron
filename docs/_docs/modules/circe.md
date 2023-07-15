@@ -20,13 +20,33 @@ Mill:
 ivy"io.github.iltotore::iron-circe:version"
 ```
 
+### Following examples' dependencies
+
+SBT:
+
+```scala
+libraryDependencies += "io.circe" %% "circe-core" % "0.14.5"
+libraryDependencies += "io.circe" %% "circe-generic" % "0.14.5"
+libraryDependencies += "io.circe" %% "circe-parser" % "0.14.5"
+```
+
+Mill:
+
+```scala
+ivy"io.circe::circe-core::0.14.5"
+ivy"io.circe::circe-generic::0.14.5"
+ivy"io.circe::circe-parser::0.14.5"
+```
+
 ## Encoder/Decoder instances
 
-Given Encoder/Decoder for Iron enables using refined types with any Circe feature including automatic derivation:
+Given Encoder/Decoder for Iron enables using refined types with any Circe feature, including automatic derivation:
 
 ```scala
 import io.circe.*
 import io.circe.parser.*
+import io.circe.syntax.*
+import io.circe.generic.auto.*
 
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
