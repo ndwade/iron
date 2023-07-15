@@ -3,6 +3,7 @@ package io.github.iltotore.iron.testing
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.*
 import utest.*
+import io.github.iltotore.iron.macros.union.IsUnion
 
 object NumericSuite extends TestSuite:
 
@@ -89,5 +90,73 @@ object NumericSuite extends TestSuite:
       test - Double.NegativeInfinity.assertRefine[Infinity]
       test - 0f.assertNotRefine[Infinity]
       test - 0d.assertNotRefine[Infinity]
+    }
+
+    test("inference") {
+
+      /**
+       * Found:    (1.618d : Double)
+       * Required: io.github.iltotore.iron.IronType[Double,
+       *  io.github.iltotore.iron.constraint.numeric.Positive
+       * ]
+       * Note that implicit conversions cannot be applied because they are ambiguous;
+       * both given instance given_UnionConstraint_A_C in object Constraint and given
+       * instance given_IntersectionConstraint_A_C in object Constraint
+       * match type io.github.iltotore.iron.Constraint[Double,
+       *  io.github.iltotore.iron.constraint.any.DescribedAs[
+       *    io.github.iltotore.iron.constraint.numeric.Greater[(0 : Int)]
+       *  , ("Should be strictly positive" : String)]
+       * ]bloop(7)
+       */
+      // inline def p: Double :| Positive = 1.618
+      inline def p: Double :| Greater[0] = 1.618
+
+      /**
+       * Found:    (0.618d : Double)
+       * Required: io.github.iltotore.iron.IronType[Double,
+       *  io.github.iltotore.iron.constraint.numeric.Interval.OpenClosed[(0 : Int),
+       *    (1 : Int)
+       *  ]
+       * ]
+       * Note that implicit conversions cannot be applied because they are ambiguous;
+       * both given instance given_UnionConstraint_A_C in object Constraint and given
+       * instance given_IntersectionConstraint_A_C in object Constraint match type
+       * io.github.iltotore.iron.Constraint[Double,
+       *  io.github.iltotore.iron.constraint.any.DescribedAs[
+       *    io.github.iltotore.iron.constraint.numeric.Greater[(0 : Int)]
+       *   & io.github.iltotore.iron.constraint.numeric.LessEqual[(1 : Int)],
+       *    ("Should be included in (" : String)
+       *   + (0 : Int) + (", " : String) + (1 : Int) + ("]" : String)]
+       * ]bloop(7)
+       */
+      // inline def q: Double :| Interval.OpenClosed[0, 1] = .618
+
+      /**
+       * Found:    (0.618d : Double)
+       * Required: io.github.iltotore.iron.IronType[Double,
+       *  io.github.iltotore.iron.constraint.numeric.Greater[(0 : Int)]
+       * & io.github.iltotore.iron.constraint.numeric.LessEqual[(1 : Int)]]
+       * Note that implicit conversions cannot be applied because they are ambiguous;
+       * both given instance given_UnionConstraint_A_C in object Constraint
+       * and given instance given_IntersectionConstraint_A_C in object Constraint
+       * match type io.github.iltotore.iron.Constraint[Double,
+       *  (io.github.iltotore.iron.constraint.numeric.Greater[(0 : Int)] &
+       *    io.github.iltotore.iron.constraint.numeric.LessEqual[(1 : Int)]
+       *  )
+       * ]bloop(7)
+       */
+      // inline def q: Double :| (Greater[0] & LessEqual[1]) = .618
+
+      val q: Double :| Interval.OpenClosed[0, 1] = .618
+      // val q: Double :| (Greater[0] & LessEqual[1]) = .618
+      val qq: Double :| Greater[0] = q
+
+      val constraint = summon[Constraint[Double, DescribedAs[Greater[0], ("Should be strictly positive")]]]
+      // val isUnion = summon[IsUnion[Double :| Interval.OpenClosed[0, 1]]]
+      // val isUnion = summon[IsUnion[Double]]
+      // val xu = summon[Constraint.UnionConstraint[Double, DescribedAs[Greater[0], ("Should be strictly positive")]]]
+      // val xi = summon[Constraint.IntersectionConstraint[Double, DescribedAs[Greater[0], ("Should be strictly positive")]]]
+
+      test - 1d.assertRefine[Greater[0]]
     }
   }

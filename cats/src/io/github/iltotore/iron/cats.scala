@@ -116,11 +116,6 @@ object cats extends IronCatsInstances:
     inline def refineFurtherValidatedNel[C2](using inline constraint: Constraint[A, C2]): ValidatedNel[String, A :| (C1 & C2)] =
       (value: A).refineValidatedNel[C2].map(_.assumeFurther[C1])
 
-<<<<<<< HEAD
-/**
- * Represent all Cats' typeclass instances for Iron.
- */
-=======
   extension [A, C, T](ops: RefinedTypeOpsImpl[A, C, T])
 
     /**
@@ -173,7 +168,6 @@ object cats extends IronCatsInstances:
   /**
    * Represent all Cats' typeclass instances for Iron.
    */
->>>>>>> b401ea6e4e28ee7e2f6ad768e24d3b521abb79c6
 private trait IronCatsInstances extends IronCatsLowPriority:
   inline given [A, C](using inline ev: Eq[A]): Eq[A :| C] = ev.asInstanceOf[Eq[A :| C]]
 

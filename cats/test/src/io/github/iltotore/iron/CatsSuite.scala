@@ -3,12 +3,7 @@ package io.github.iltotore.iron
 import _root_.cats.Show
 import _root_.cats.kernel.*
 import _root_.cats.derived.*
-import _root_.cats.instances.all.*
-<<<<<<< HEAD
-import _root_.cats.syntax.all.*
-
-=======
->>>>>>> b401ea6e4e28ee7e2f6ad768e24d3b521abb79c6
+import _root_.cats.syntax.all.given
 import io.github.iltotore.iron.cats.given
 import io.github.iltotore.iron.constraint.all.*
 import utest.{Show as _, *}
@@ -42,7 +37,7 @@ object CatsSuite extends TestSuite:
 
   given BoundedSemilattice[String] = BoundedSemilattice.instance("", _ + _)
 
-  def combinePositive(l: Int :| Positive, r: Int :| Positive)(using CommutativeMonoid[Int :| Positive]): Int :| Positive =
+  inline def combinePositive(l: Int :| Positive, r: Int :| Positive)(using CommutativeMonoid[Int :| Positive]): Int :| Positive =
     l |+| r
   val tests: Tests = Tests {
 
@@ -73,35 +68,37 @@ object CatsSuite extends TestSuite:
 
     test("alley") {
       test("commutativeMonoid") {
+
+        val six: Int :| Positive = 6
+        val twelve = six |+| six
+        val negativeSix: Int :| Negative = -6
+        val negativeTwelve = negativeSix |+| negativeSix
+
         test("int") {
-          test("pos") - assert(CommutativeMonoid[Int :| Positive].combine(1, 5) == 6)
-          test("neg") - assert(CommutativeMonoid[Int :| Negative].combine(-1, -5) == -6)
+          test("pos") - assert(CommutativeMonoid[Int :| Positive].combine(1, 5) === six)
+          test("neg") - assert(CommutativeMonoid[Int :| Negative].combine(-1, -5) === negativeSix)
         }
 
         test("int-syntax") {
-          val six: Int :| Positive = 6
-          val twelve = six |+| six
-          val negativeSix: Int :| Negative = -6
-          val negativeTwelve = negativeSix |+| negativeSix
-          test("plus") - assert(six + six === twelve)
           test("pos") - assert(combinePositive(six, six) === twelve)
           test("neg") - assert((negativeSix |+| negativeSix) === negativeTwelve)
+          test("plus") - assert(six + six === twelve)
           test("minus") - assert(negativeSix + negativeSix === negativeTwelve)
         }
 
         test("long") {
-          test("pos") - assert(CommutativeMonoid[Long :| Positive].combine(1, 5) == 6)
-          test("neg") - assert(CommutativeMonoid[Long :| Negative].combine(-1, -5) == -6)
+          test("pos") - assert(CommutativeMonoid[Long :| Positive].combine(1, 5) === 6)
+          test("neg") - assert(CommutativeMonoid[Long :| Negative].combine(-1, -5) === -6)
         }
 
         test("float") {
-          test("pos") - assert(CommutativeMonoid[Float :| Positive].combine(1, 5) == 6)
-          test("neg") - assert(CommutativeMonoid[Float :| Negative].combine(-1, -5) == -6)
+          test("pos") - assert(CommutativeMonoid[Float :| Positive].combine(1, 5) === 6)
+          test("neg") - assert(CommutativeMonoid[Float :| Negative].combine(-1, -5) === -6)
         }
 
         test("double") {
-          test("pos") - assert(CommutativeMonoid[Double :| Positive].combine(1, 5) == 6)
-          test("neg") - assert(CommutativeMonoid[Double :| Negative].combine(-1, -5) == -6)
+          test("pos") - assert(CommutativeMonoid[Double :| Positive].combine(1, 5) === 6)
+          test("neg") - assert(CommutativeMonoid[Double :| Negative].combine(-1, -5) === -6)
         }
       }
     }
